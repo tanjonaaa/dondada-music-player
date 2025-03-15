@@ -14,8 +14,8 @@
 		96905EF65AED1B983A6B3ABC /* libPods-dondadamusicplayer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-dondadamusicplayer.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		648C5A26363042848C37AB13 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24A70E9C620141EEA82223B2 /* noop-file.swift */; };
-		AD98579336CC4C7A809646A0 /* Poppins-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 98DCF21FA9974FDE82D9960C /* Poppins-Regular.ttf */; };
+		F80F9BC6949D4DE08E8DA903 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4068417E68A6490F863B392F /* noop-file.swift */; };
+		55C01CE829404FB79893ED01 /* Nunito.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8409DBE0DF024149B152DA12 /* Nunito.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,9 +32,9 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-dondadamusicplayer/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		24A70E9C620141EEA82223B2 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "dondadamusicplayer/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		5CA540B081274D95B6259B0D /* dondadamusicplayer-Bridging-Header.h */ = {isa = PBXFileReference; name = "dondadamusicplayer-Bridging-Header.h"; path = "dondadamusicplayer/dondadamusicplayer-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		98DCF21FA9974FDE82D9960C /* Poppins-Regular.ttf */ = {isa = PBXFileReference; name = "Poppins-Regular.ttf"; path = "../assets/fonts/Poppins-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4068417E68A6490F863B392F /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "dondadamusicplayer/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		7F18B6136D6647EDAA0DA5D9 /* dondadamusicplayer-Bridging-Header.h */ = {isa = PBXFileReference; name = "dondadamusicplayer-Bridging-Header.h"; path = "dondadamusicplayer/dondadamusicplayer-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		8409DBE0DF024149B152DA12 /* Nunito.ttf */ = {isa = PBXFileReference; name = "Nunito.ttf"; path = "../assets/fonts/Nunito.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,8 +59,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				24A70E9C620141EEA82223B2 /* noop-file.swift */,
-				5CA540B081274D95B6259B0D /* dondadamusicplayer-Bridging-Header.h */,
+				4068417E68A6490F863B392F /* noop-file.swift */,
+				7F18B6136D6647EDAA0DA5D9 /* dondadamusicplayer-Bridging-Header.h */,
 			);
 			name = dondadamusicplayer;
 			sourceTree = "<group>";
@@ -90,7 +90,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
-				40FFAF4FE0F94E3F8DE9EDC2 /* Resources */,
+				03DC6E6CC0B94BA09D8829A9 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -139,10 +139,10 @@
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
-		40FFAF4FE0F94E3F8DE9EDC2 /* Resources */ = {
+		03DC6E6CC0B94BA09D8829A9 /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
-				98DCF21FA9974FDE82D9960C /* Poppins-Regular.ttf */,
+				8409DBE0DF024149B152DA12 /* Nunito.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -210,8 +210,8 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				F8A75EFB193340FBBB617ADA /* dondadamusicplayer-Bridging-Header.h in Resources */,
-				AD98579336CC4C7A809646A0 /* Poppins-Regular.ttf in Resources */,
+				462E2941182A42EDAE0CD1E0 /* dondadamusicplayer-Bridging-Header.h in Resources */,
+				55C01CE829404FB79893ED01 /* Nunito.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,7 +287,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				648C5A26363042848C37AB13 /* noop-file.swift in Sources */,
+				F80F9BC6949D4DE08E8DA903 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
