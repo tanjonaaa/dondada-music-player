@@ -1,19 +1,31 @@
 import {Tabs} from 'expo-router';
 import {AntDesign, Ionicons} from '@expo/vector-icons';
 import {StyleSheet, Text} from 'react-native';
+import {useTheme} from "@react-navigation/core";
 
-const TabLabel = ({focused, color, title}: { focused: boolean, color: string, title: string }) => (
-    <Text style={[styles.tabBarLabel, {color, fontWeight: focused ? 'bold' : 'normal'}]}>
-        {title}
-    </Text>
-);
+const TabLabel = ({focused, color, title}: { focused: boolean, color: string, title: string }) => {
+    const theme = useTheme();
+    const font = theme.fonts.regular;
+
+    return (
+        <Text style={[styles.tabBarLabel, {
+            color,
+            fontWeight: focused ? 'bold' : 'normal',
+            fontFamily: font.fontFamily,
+        }]}>
+            {title}
+        </Text>
+    )
+};
 
 export default function TabLayout() {
+    const theme = useTheme();
+
     return (
         <Tabs
             screenOptions={{
-                tabBarActiveTintColor: '#181c27',
-                tabBarInactiveTintColor: '#a1a4a9',
+                tabBarActiveTintColor: theme.colors.primary,
+                tabBarInactiveTintColor: theme.colors.text,
                 tabBarStyle: styles.tabBar,
             }}
         >
@@ -65,7 +77,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 0,
     },
     tabBarLabel: {
-        fontFamily: 'Nunito',
         marginTop: 5,
         fontSize: 10,
     },
