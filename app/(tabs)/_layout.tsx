@@ -4,14 +4,12 @@ import {StyleSheet, Text} from 'react-native';
 import {useTheme} from "@react-navigation/core";
 
 const TabLabel = ({focused, color, title}: { focused: boolean, color: string, title: string }) => {
-    const theme = useTheme();
-    const font = theme.fonts.regular;
+    const {fonts} = useTheme();
 
     return (
         <Text style={[styles.tabBarLabel, {
             color,
-            fontWeight: focused ? 'bold' : 'normal',
-            fontFamily: font.fontFamily,
+            fontFamily: focused ? fonts.heavy.fontFamily : fonts.regular.fontFamily,
         }]}>
             {title}
         </Text>
@@ -65,16 +63,16 @@ export default function TabLayout() {
 
 const styles = StyleSheet.create({
     tabBar: {
-        paddingLeft: 50,
-        paddingRight: 50,
+        paddingHorizontal: 50,
         paddingTop: 10,
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
         height: 80,
         elevation: 0,
         shadowOpacity: 0,
         shadowRadius: 0,
         borderTopWidth: 0,
+        position: 'absolute',
     },
     tabBarLabel: {
         marginTop: 5,

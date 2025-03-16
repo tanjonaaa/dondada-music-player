@@ -45,13 +45,22 @@
       <key>NSAllowsLocalNetworking</key>
       <true/>
     </dict>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>Autoriser $(PRODUCT_NAME) à sauvegarder les photos.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Autoriser $(PRODUCT_NAME) à accéder à vos photos.</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
     </array>
     <key>UIAppFonts</key>
     <array>
-      <string>Nunito.ttf</string>
+      <string>Nunito-Regular.ttf</string>
+      <string>Nunito-Medium.ttf</string>
+      <string>Nunito-Bold.ttf</string>
+      <string>Nunito-ExtraBold.ttf</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
