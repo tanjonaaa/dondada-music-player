@@ -1,43 +1,25 @@
 import {useEffect, useState} from 'react';
 import {Text, View, FlatList, TouchableOpacity} from "react-native";
 import * as MediaLibrary from 'expo-media-library';
-import {Audio} from 'expo-av';
 import {styles} from '@/styles/index.styles';
 import {mapAssetToSong, Song} from '@/types/song';
 import MusicPlayer from "@/components/MusicPlayer";
 import {useTheme} from "@react-navigation/core";
+import TrackPlayer from "react-native-track-player";
 
 export default function Index() {
     const [songs, setSongs] = useState<Song[]>([]);
     const [permission, setPermission] = useState<boolean>(false);
-    const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [currentSong, setCurrentSong] = useState<Song | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const {colors, fonts} = useTheme();
 
     useEffect(() => {
-        setupAudio();
         requestPermission();
         return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
+            TrackPlayer.reset();
         };
     }, []);
-
-    const setupAudio = async () => {
-        try {
-            await Audio.setAudioModeAsync({
-                allowsRecordingIOS: false,
-                staysActiveInBackground: true,
-                playsInSilentModeIOS: true,
-                shouldDuckAndroid: true,
-                playThroughEarpieceAndroid: false,
-            });
-        } catch (error) {
-            console.error('Erreur lors de la configuration audio:', error);
-        }
-    };
 
     const requestPermission = async () => {
         const {status} = await MediaLibrary.requestPermissionsAsync();
@@ -86,46 +68,25 @@ export default function Index() {
     };
 
     const playSound = async (song: Song) => {
-        try {
-            if (sound) {
-                await sound.unloadAsync();
+        await TrackPlayer.add([
+            {
+                url: song.uri
             }
+        ]);
 
-            const {sound: newSound} = await Audio.Sound.createAsync(
-                {uri: song.uri},
-                {shouldPlay: true},
-                (status) => {
-                    if ('isLoaded' in status && status.isLoaded && status.didJustFinish) {
-                        setIsPlaying(false);
-                    }
-                }
-            );
+        await TrackPlayer.play()
 
-            await newSound.setStatusAsync({
-                progressUpdateIntervalMillis: 1000,
-                positionMillis: 0,
-                shouldPlay: true,
-                rate: 1.0,
-                shouldCorrectPitch: true,
-            });
-
-            setSound(newSound);
-            setCurrentSong(song);
-            setIsPlaying(true);
-        } catch (error) {
-            console.error('Erreur lors de la lecture:', error);
-        }
+        setIsPlaying(true);
+        setCurrentSong(song);
     };
 
     const togglePlayPause = async () => {
-        if (sound) {
-            if (isPlaying) {
-                await sound.pauseAsync();
-            } else {
-                await sound.playAsync();
-            }
-            setIsPlaying(!isPlaying);
+        if (isPlaying) {
+            await TrackPlayer.pause();
+        } else {
+            await TrackPlayer.play();
         }
+        setIsPlaying(!isPlaying);
     };
 
     const renderSongItem = ({item, index}: { item: Song, index: number }) => {
@@ -149,7 +110,7 @@ export default function Index() {
                     <Text style={[styles.songArtist, {
                         color: colors.text,
                         fontFamily: fonts.regular.fontFamily
-                    }]}>{item.artist} - {item.duration}</Text>
+                    }]}>{item.artist} - {item.formattedDuration}</Text>
                 </View>
             </TouchableOpacity>
         );
