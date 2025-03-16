@@ -134,7 +134,11 @@ export default function Index() {
             />
 
             {currentSong && (
-                <MusicPlayer currentSong={currentSong} isPlaying={isPlaying} togglePlayPause={togglePlayPause}/>
+                <MusicPlayer
+                    currentSong={currentSong}
+                    isPlaying={isPlaying}
+                    togglePlayPause={togglePlayPause}
+                />
             )}
         </View>
     );
