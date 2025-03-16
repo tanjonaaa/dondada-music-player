@@ -36,7 +36,7 @@ export const mapAssetToSong = (asset: Asset): Song => {
         duration: asset.duration,
         formattedDuration: formatDuration(asset.duration)
     };
-}
+};
 
 const formatDuration = (seconds: number): string => {
     const roundedSeconds = Math.floor(seconds);

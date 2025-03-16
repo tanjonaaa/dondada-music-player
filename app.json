@@ -53,7 +53,16 @@
           "savePhotosPermission": "Autoriser $(PRODUCT_NAME) à sauvegarder les photos.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Autoriser $(PRODUCT_NAME) à accéder à vos photos.",
+          "savePhotosPermission": "Autoriser $(PRODUCT_NAME) à sauvegarder les photos.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true
