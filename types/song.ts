@@ -5,7 +5,8 @@ export interface Song {
     title: string;
     artist: string;
     uri: string;
-    duration: string;
+    duration: number;
+    formattedDuration: string;
 }
 
 export const mapAssetToSong = (asset: Asset): Song => {
@@ -32,7 +33,8 @@ export const mapAssetToSong = (asset: Asset): Song => {
             .replace(/[_-]/g, " ")
             .trim(),
         uri: asset.uri,
-        duration: formatDuration(asset.duration)
+        duration: asset.duration,
+        formattedDuration: formatDuration(asset.duration)
     };
 }
 
