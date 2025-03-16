@@ -3,7 +3,7 @@ import {
     requestPermissionsAsync, 
     getAssetsAsync
 } from 'expo-music-library';
-import { Song, mapMusicAssetToSong } from '@/types/song';
+import { Song, mapAssetToSong } from '@/types/song';
 
 export const useSongs = () => {
     const [songs, setSongs] = useState<Song[]>([]);
@@ -27,7 +27,7 @@ export const useSongs = () => {
                 sortBy: ['creationTime']
             });
 
-            const mappedSongs = assets.assets.map(mapMusicAssetToSong);
+            const mappedSongs = assets.assets.map(mapAssetToSong);
             setSongs(mappedSongs);
         } catch (err) {
             console.error('Erreur lors du chargement des musiques:', err);

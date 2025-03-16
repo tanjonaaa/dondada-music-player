@@ -22,16 +22,6 @@ export const styles = StyleSheet.create({
     list: {
         flex: 1,
     },
-    emptyContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: 40,
-    },
-    emptyText: {
-        fontSize: 16,
-        textAlign: 'center',
-    },
     songItem: {
         flexDirection: 'row',
         alignItems: 'center',
