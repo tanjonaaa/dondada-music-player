@@ -32,6 +32,7 @@ export default function TabLayout() {
                 name="index"
                 options={{
                     title: 'Home',
+                    headerShown: false,
                     tabBarIcon: ({color}) => <AntDesign size={28} name="home" color={color}/>,
                     tabBarLabel: ({focused, color}) => (
                         <TabLabel focused={focused} color={color} title="Home"/>

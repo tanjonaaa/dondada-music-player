@@ -13,7 +13,7 @@ export interface Song {
     uri: string;
     duration?: number;
     formattedDuration?: string;
-    artwork: string;
+    artwork?: string;
 }
 
 export const mapAssetToSong = (asset: Asset): Song => {
@@ -24,7 +24,7 @@ export const mapAssetToSong = (asset: Asset): Song => {
         uri: asset.uri,
         duration: asset.duration,
         formattedDuration: formatDuration(asset.duration),
-        artwork: asset.artwork && asset.artwork !== "" ? asset.artwork : unknownTrackImageUri,
+        artwork: asset.artwork,
     };
 };
 
@@ -35,7 +35,7 @@ export const mapTrackToSong = (track: Track): Song => {
         artist: track.artist,
         duration: track.duration,
         formattedDuration: formatDuration(track.duration),
-        artwork: track.artwork && track.artwork !== "" ? track.artwork : unknownTrackImageUri
+        artwork: track.artwork
     }
 }
 
