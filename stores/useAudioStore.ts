@@ -19,6 +19,11 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
     isPlaying: false,
     playSong: async (song: Song) => {
         try {
+            setState({
+                currentSong: song,
+                isPlaying: false
+            });
+
             const trackData = {
                 url: song.uri,
                 artist: song.artist,
@@ -29,17 +34,16 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
 
             await TrackPlayer.reset();
             await TrackPlayer.add([trackData]);
-            
-            setState({
-                currentSong: song,
-                isPlaying: true,
-                songsQueue: getState().songsQueue
-            });
-            
             await TrackPlayer.play();
+            
+            setState({ isPlaying: true });
+            
         } catch (error) {
             console.error("Erreur lors de la lecture:", error);
-            setState({ isPlaying: false });
+            setState({ 
+                isPlaying: false,
+                currentSong: getState().currentSong 
+            });
         }
     },
     addSongToQueue: async (song: Song) => {
@@ -62,22 +66,23 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
             }
         } catch (error) {
             console.error("Erreur lors de l'ajout à la file d'attente:", error);
+            setState((state) => ({
+                songsQueue: state.songsQueue.filter(s => s.uri !== song.uri)
+            }));
         }
     },
     togglePlayPause: async () => {
         const {isPlaying} = getState();
         
-        setState({isPlaying: !isPlaying});
-
         try {
             if (isPlaying) {
                 await TrackPlayer.pause();
             } else {
                 await TrackPlayer.play();
             }
+            setState({isPlaying: !isPlaying});
         } catch (error) {
             console.error("Erreur lors du toggle play/pause:", error);
-            setState({isPlaying: isPlaying});
         }
     },
     setCurrentSong: (song: Song) => setState({currentSong: song}),

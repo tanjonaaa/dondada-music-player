@@ -1,17 +1,17 @@
-import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, FlatList, StyleSheet, Text, View, Image, Pressable} from "react-native";
 import {Song} from "@/types/song";
 import SongItem from "@/components/SongItem";
 import {useTheme} from "@react-navigation/native";
-import {memo, useCallback} from 'react';
+import {memo, useCallback, useMemo} from 'react';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import useAudioStore from "@/stores/useAudioStore";
 
-// Optimisation: Mémoriser le composant de chargement
 const LoadingView = memo(({color}: {color: string}) => (
     <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={color}/>
     </View>
 ));
 
-// Optimisation: Mémoriser le composant vide
 const EmptyView = memo(({colors, fonts}: {colors: any, fonts: any}) => (
     <View style={styles.emptyContainer}>
         <Text style={[
@@ -23,17 +23,50 @@ const EmptyView = memo(({colors, fonts}: {colors: any, fonts: any}) => (
     </View>
 ));
 
+const getItemLayout = (_: any, index: number) => ({
+    length: 72, 
+    offset: 72 * index,
+    index,
+});
+
 const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) => {
     const {colors, fonts} = useTheme();
+    const {addSongToQueue} = useAudioStore();
 
-    // Optimisation: Mémoriser la fonction de rendu
     const renderItem = useCallback(({item, index}: {item: Song, index: number}) => (
-        <SongItem song={item} index={(index + 1).toString().padStart(2, '0')}/>
-    ), []);
+        <View style={styles.songItemContainer}>
+            <Text style={{
+                marginVertical: 'auto',
+                marginLeft: 10,
+                color: colors.primary,
+                fontFamily: fonts.medium.fontFamily,
+                width: "8%"
+            }}>{(index + 1).toString().padStart(2, '0')}</Text>
+            {item.artwork ? (
+                <Image source={{uri: item.artwork}} style={styles.artwork} />
+            ) : (
+                <View style={[styles.artwork, styles.placeholderArtwork]}>
+                    <MaterialIcons name="music-note" size={40} color={colors.text} />
+                </View>
+            )}
+            <SongItem song={item} />
+            <Pressable 
+                onPress={() => addSongToQueue(item)}
+                style={({pressed}) => ({opacity: pressed ? 0.5 : 1})}
+            >
+                <MaterialIcons 
+                    name="queue-music" 
+                    color={colors.primary} 
+                    size={25} 
+                    style={{marginRight: 10}}
+                />
+            </Pressable>
+        </View>
+    ), [colors, fonts, addSongToQueue]);
 
     const keyExtractor = useCallback((item: Song) => item.id ?? '', []);
 
-    const renderEmptyComponent = useCallback(() => (
+    const renderEmptyComponent = useMemo(() => (
         <EmptyView colors={colors} fonts={fonts}/>
     ), [colors, fonts]);
 
@@ -49,9 +82,12 @@ const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) =
             style={styles.list}
             ListEmptyComponent={renderEmptyComponent}
             removeClippedSubviews={true}
-            maxToRenderPerBatch={10}
-            windowSize={5}
-            initialNumToRender={10}
+            maxToRenderPerBatch={5}
+            windowSize={3}
+            initialNumToRender={8}
+            getItemLayout={getItemLayout}
+            updateCellsBatchingPeriod={50}
+            showsVerticalScrollIndicator={false}
         />
     );
 });
@@ -76,5 +112,21 @@ const styles = StyleSheet.create({
     emptyText: {
         fontSize: 16,
         textAlign: 'center',
+    },
+    songItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+    },
+    artwork: {
+        width: 50,
+        height: 50,
+        borderRadius: 4,
+        marginRight: 10,
+    },
+    placeholderArtwork: {
+        backgroundColor: 'rgba(0,0,0,0.05)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

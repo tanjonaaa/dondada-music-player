@@ -1,4 +1,4 @@
-import {Text, TouchableOpacity, useColorScheme, View} from "react-native";
+import {Text, TouchableOpacity, useColorScheme, View, Image} from "react-native";
 import {styles} from "@/styles/index.styles";
 import {AntDesign} from "@expo/vector-icons";
 import {useTheme} from "@react-navigation/core";
@@ -17,7 +17,22 @@ export default function MusicPlayer() {
     return (
         <TouchableOpacity onPress={() => setSongToShow(currentSong)}>
             <View style={[styles.player, {backgroundColor: musicPlayerBgColor}]}>
-                <View style={styles.songMetadata}>
+                {currentSong?.artwork && (
+                    <Image 
+                        source={{ uri: currentSong.artwork }}
+                        style={{
+                            width: 50,
+                            height: 50,
+                            borderRadius: 25,
+                            marginRight: 12,
+                            marginLeft: -40,
+                            marginTop: -6,
+                            borderWidth: 2,
+                            borderColor: colorScheme === "dark" ? "#ffffff20" : "#00000020"
+                        }}
+                    />
+                )}
+                <View style={[styles.songMetadata, { flex: 1 }]}>
                     <Text style={[styles.currentTitle, {
                         color: songTitleColor,
                         fontFamily: fonts.bold.fontFamily
