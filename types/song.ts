@@ -1,5 +1,10 @@
 import {Asset} from "expo-music-library";
 import {Track} from "react-native-track-player";
+import { Image } from 'react-native';
+
+export const unknownTrackImageUri = Image.resolveAssetSource(
+  require('@/assets/images/unknown_track.png')
+).uri;
 
 export interface Song {
     id?: string;
@@ -8,36 +13,18 @@ export interface Song {
     uri: string;
     duration?: number;
     formattedDuration?: string;
-    artwork?: string;
+    artwork: string;
 }
 
 export const mapAssetToSong = (asset: Asset): Song => {
-    // Extract° du titre et de l'artiste du nom de fichier
-    const filename = asset.filename.replace(/\.[^/.]+$/, ""); // Enlève l'extension
-    let title = filename;
-    let artist = 'Artiste inconnu';
-
-    // Patterns communs de nommage: "Artiste - Titre" ou "Artiste _ Titre" ou "Artiste–Titre"
-    const separators = [' - ', ' _ ', ' – ', '-', '_', '–'];
-    for (let separator of separators) {
-        if (filename.includes(separator)) {
-            [artist, title] = filename.split(separator).map(s => s.trim());
-            break;
-        }
-    }
-
     return {
         id: asset.id,
-        title: title
-            .replace(/[_-]/g, " ") // Remplace les _ et - restants par des espaces
-            .trim(),
-        artist: artist
-            .replace(/[_-]/g, " ")
-            .trim(),
+        title: asset.title || asset.filename.replace(/\.[^/.]+$/, "").trim(),
+        artist: asset.artist || 'Artiste inconnu',
         uri: asset.uri,
         duration: asset.duration,
         formattedDuration: formatDuration(asset.duration),
-        artwork: asset.artwork,
+        artwork: asset.artwork && asset.artwork !== "" ? asset.artwork : unknownTrackImageUri,
     };
 };
 
@@ -47,7 +34,8 @@ export const mapTrackToSong = (track: Track): Song => {
         title: track.title,
         artist: track.artist,
         duration: track.duration,
-        formattedDuration: formatDuration(track.duration)
+        formattedDuration: formatDuration(track.duration),
+        artwork: track.artwork && track.artwork !== "" ? track.artwork : unknownTrackImageUri
     }
 }
 
