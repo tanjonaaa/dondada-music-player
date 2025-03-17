@@ -7,15 +7,13 @@ import {styles} from '@/styles/search.styles';
 import {Ionicons} from '@expo/vector-icons';
 import {Song} from '@/types/song';
 import SongsList from "@/components/SongsList";
-import MusicPlayer from "@/components/MusicPlayer";
-import useAudioStore from "@/stores/useAudioStore";
+import GlobalMusicPlayer from "@/components/GlobalMusicPlayer";
 
 export default function SearchScreen() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
     const {songs, loading} = useSongs();
     const {colors, fonts} = useTheme();
-    const {currentSong} = useAudioStore();
 
     const filterSongs = useCallback(
         debounce((query: string) => {
@@ -63,6 +61,8 @@ export default function SearchScreen() {
                 />
             </View>
 
+            <GlobalMusicPlayer />
+
             {searchQuery.trim() ? (
                 <SongsList songs={filteredSongs} loading={loading}/>
             ) : (
@@ -83,10 +83,6 @@ export default function SearchScreen() {
                         No recent searches
                     </Text>
                 </View>
-            )}
-
-            {currentSong && (
-                <MusicPlayer />
             )}
         </View>
     );

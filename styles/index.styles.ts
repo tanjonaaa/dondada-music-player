@@ -32,5 +32,13 @@ export const styles = StyleSheet.create({
   songMetadata: {
     flexDirection: 'column',
     height: 40,
-  }
+  },
+  globalMusicPlayerContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'transparent',
+    zIndex: 1000,
+  },
 }); 

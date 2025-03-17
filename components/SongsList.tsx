@@ -1,47 +1,62 @@
 import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
 import {Song} from "@/types/song";
 import SongItem from "@/components/SongItem";
-import {useTheme} from "@react-navigation/core";
+import {useTheme} from "@react-navigation/native";
+import {memo, useCallback} from 'react';
 
-export default function SongsList({songs, loading}: { songs: Song[], loading: boolean }) {
+// Optimisation: Mémoriser le composant de chargement
+const LoadingView = memo(({color}: {color: string}) => (
+    <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={color}/>
+    </View>
+));
 
+// Optimisation: Mémoriser le composant vide
+const EmptyView = memo(({colors, fonts}: {colors: any, fonts: any}) => (
+    <View style={styles.emptyContainer}>
+        <Text style={[
+            styles.emptyText,
+            { color: colors.text, fontFamily: fonts.medium.fontFamily }
+        ]}>
+            No results found
+        </Text>
+    </View>
+));
+
+const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) => {
     const {colors, fonts} = useTheme();
 
-    const renderSongItem = ({item, index}: { item: Song, index: number }) => {
-        const formattedIndex = (index + 1).toString().padStart(2, '0');
+    // Optimisation: Mémoriser la fonction de rendu
+    const renderItem = useCallback(({item, index}: {item: Song, index: number}) => (
+        <SongItem song={item} index={(index + 1).toString().padStart(2, '0')}/>
+    ), []);
 
-        return (
-            <SongItem song={item} index={formattedIndex}/>
-        );
-    };
+    const keyExtractor = useCallback((item: Song) => item.id ?? '', []);
+
+    const renderEmptyComponent = useCallback(() => (
+        <EmptyView colors={colors} fonts={fonts}/>
+    ), [colors, fonts]);
 
     if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={colors.primary}/>
-            </View>
-        );
+        return <LoadingView color={colors.primary} />;
     }
 
     return (
         <FlatList
             data={songs}
-            renderItem={renderSongItem}
-            keyExtractor={item => item.id ?? ''}
+            renderItem={renderItem}
+            keyExtractor={keyExtractor}
             style={styles.list}
-            ListEmptyComponent={() => (
-                <View style={styles.emptyContainer}>
-                    <Text style={[
-                        styles.emptyText,
-                        { color: colors.text, fontFamily: fonts.medium.fontFamily }
-                    ]}>
-                        No results found
-                    </Text>
-                </View>
-            )}
+            ListEmptyComponent={renderEmptyComponent}
+            removeClippedSubviews={true}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            initialNumToRender={10}
         />
-    )
-}
+    );
+});
+
+export default SongsList;
 
 const styles = StyleSheet.create({
     loadingContainer: {

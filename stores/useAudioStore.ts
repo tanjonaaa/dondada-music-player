@@ -18,51 +18,67 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
     songsQueue: [],
     isPlaying: false,
     playSong: async (song: Song) => {
-        setState({
-            currentSong: song,
-            isPlaying: true,
-            songsQueue: getState().songsQueue
-        });
-
-        await TrackPlayer.reset();
-        await TrackPlayer.add([
-            {
+        try {
+            const trackData = {
                 url: song.uri,
                 artist: song.artist,
                 duration: song.duration,
                 title: song.title,
                 artwork: song.artwork,
-            }
-        ]);
-        await TrackPlayer.play();
+            };
+
+            await TrackPlayer.reset();
+            await TrackPlayer.add([trackData]);
+            
+            setState({
+                currentSong: song,
+                isPlaying: true,
+                songsQueue: getState().songsQueue
+            });
+            
+            await TrackPlayer.play();
+        } catch (error) {
+            console.error("Erreur lors de la lecture:", error);
+            setState({ isPlaying: false });
+        }
     },
     addSongToQueue: async (song: Song) => {
-        await TrackPlayer.add([
-            {
-                url: song.uri,
-                artist: song.artist,
-                duration: song.duration,
-                title: song.title,
-                artwork: song.artwork,
+        const trackData = {
+            url: song.uri,
+            artist: song.artist,
+            duration: song.duration,
+            title: song.title,
+            artwork: song.artwork,
+        };
+
+        try {
+            await TrackPlayer.add([trackData]);
+            setState((state) => ({
+                songsQueue: [...state.songsQueue, song]
+            }));
+
+            if (!getState().currentSong) {
+                getState().playSong(song);
             }
-        ]);
-
-        setState((state) => ({songsQueue: [...state.songsQueue, song]}));
-
-        if (!getState().currentSong) {
-            getState().playSong(song);
+        } catch (error) {
+            console.error("Erreur lors de l'ajout à la file d'attente:", error);
         }
     },
     togglePlayPause: async () => {
         const {isPlaying} = getState();
-
-        if (isPlaying) {
-            await TrackPlayer.pause();
-        } else {
-            await TrackPlayer.play();
-        }
-
+        
         setState({isPlaying: !isPlaying});
+
+        try {
+            if (isPlaying) {
+                await TrackPlayer.pause();
+            } else {
+                await TrackPlayer.play();
+            }
+        } catch (error) {
+            console.error("Erreur lors du toggle play/pause:", error);
+            setState({isPlaying: isPlaying});
+        }
     },
     setCurrentSong: (song: Song) => setState({currentSong: song}),
     seekTo: async (value: number) => {

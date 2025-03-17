@@ -3,25 +3,16 @@ import {styles} from "@/styles/index.styles";
 import {AntDesign} from "@expo/vector-icons";
 import {useTheme} from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
-import {Event, useTrackPlayerEvents} from "react-native-track-player";
-import {mapTrackToSong} from "@/types/song";
 import useSongStore from "@/stores/useSongStore";
 
 export default function MusicPlayer() {
     const colorScheme = useColorScheme();
     const {colors, fonts} = useTheme();
-    const {currentSong, togglePlayPause, isPlaying, setCurrentSong} = useAudioStore();
+    const {currentSong, togglePlayPause, isPlaying} = useAudioStore();
     const {setSongToShow} = useSongStore();
 
     const songTitleColor = colorScheme === "dark" ? colors.primary : colors.background;
     const musicPlayerBgColor = colorScheme === "dark" ? "#2a2e42" : colors.primary;
-
-    useTrackPlayerEvents([Event.PlaybackActiveTrackChanged], async event => {
-        if (event.type === Event.PlaybackActiveTrackChanged && event.track != null) {
-            const song = mapTrackToSong(event.track);
-            setCurrentSong(song);
-        }
-    });
 
     return (
         <TouchableOpacity onPress={() => setSongToShow(currentSong)}>
