@@ -22,7 +22,7 @@ export default function SongsList({songs, loading}: { songs: Song[], loading: bo
                     <Image source={{uri: item.artwork}} style={styles.artwork} />
                 ) : (
                     <View style={[styles.artwork, styles.placeholderArtwork]}>
-                        <MaterialIcons name="music-note" size={40} color={colors.text} />
+                        <MaterialIcons name="music-note" size={40} color={colors.text} style={styles.artwork}  />
                     </View>
                 )}
                 <SongItem song={item} />
