@@ -2,6 +2,7 @@ import {Tabs} from 'expo-router';
 import {AntDesign, Ionicons} from '@expo/vector-icons';
 import {StyleSheet, Text} from 'react-native';
 import {useTheme} from "@react-navigation/core";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const TabLabel = ({focused, color, title}: { focused: boolean, color: string, title: string }) => {
     const {fonts} = useTheme();
@@ -57,13 +58,23 @@ export default function TabLayout() {
                     ),
                 }}
             />
+            <Tabs.Screen
+                name="queue"
+                options={{
+                    title: 'Queue',
+                    tabBarIcon: ({color}) => <MaterialIcons size={28} name="queue-music" color={color}/>,
+                    tabBarLabel: ({focused, color}) => (
+                        <TabLabel focused={focused} color={color} title="Queue"/>
+                    ),
+                }}
+            />
         </Tabs>
     );
 }
 
 const styles = StyleSheet.create({
     tabBar: {
-        paddingHorizontal: 50,
+        paddingHorizontal: 25,
         paddingTop: 10,
         borderTopLeftRadius: 15,
         borderTopRightRadius: 15,
