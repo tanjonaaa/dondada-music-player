@@ -1,4 +1,4 @@
-import {Asset} from "expo-media-library";
+import {Asset} from "expo-music-library";
 import {Track} from "react-native-track-player";
 
 export interface Song {
@@ -8,6 +8,7 @@ export interface Song {
     uri: string;
     duration?: number;
     formattedDuration?: string;
+    artwork?: string;
 }
 
 export const mapAssetToSong = (asset: Asset): Song => {
@@ -35,7 +36,8 @@ export const mapAssetToSong = (asset: Asset): Song => {
             .trim(),
         uri: asset.uri,
         duration: asset.duration,
-        formattedDuration: formatDuration(asset.duration)
+        formattedDuration: formatDuration(asset.duration),
+        artwork: asset.artwork,
     };
 };
 
