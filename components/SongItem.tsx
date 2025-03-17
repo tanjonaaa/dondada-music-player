@@ -38,7 +38,8 @@ function SongMetadata({song}: { song: Song }) {
     );
 }
 
-export default function SongItem({song}: { song: Song }) {
+export default function SongItem({song, index}: { song: Song, index: string }) {
+    const {colors, fonts} = useTheme();
     const {playSong} = useAudioStore();
 
     return (
@@ -46,6 +47,12 @@ export default function SongItem({song}: { song: Song }) {
             style={styles.songItem}
             onPress={() => playSong(song)}
         >
+            <Text style={{
+                marginVertical: 'auto',
+                color: colors.primary,
+                fontFamily: fonts.medium.fontFamily,
+                width: "8%"
+            }}>{index}</Text>
             <SongMetadata song={song}/>
         </TouchableOpacity>
     );

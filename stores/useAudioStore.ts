@@ -10,6 +10,7 @@ interface AudioContextType {
     addSongToQueue: (song: Song) => Promise<void>;
     togglePlayPause: () => Promise<void>;
     setCurrentSong: (song: Song) => void;
+    seekTo: (value: number) => Promise<void>;
 }
 
 const useAudioStore = create<AudioContextType>((setState, getState) => ({
@@ -17,6 +18,12 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
     songsQueue: [],
     isPlaying: false,
     playSong: async (song: Song) => {
+        setState({
+            currentSong: song,
+            isPlaying: true,
+            songsQueue: getState().songsQueue
+        });
+
         await TrackPlayer.reset();
         await TrackPlayer.add([
             {
@@ -24,15 +31,10 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
                 artist: song.artist,
                 duration: song.duration,
                 title: song.title,
+                artwork: song.artwork,
             }
         ]);
         await TrackPlayer.play();
-
-        setState({
-            currentSong: song,
-            isPlaying: true,
-            songsQueue: getState().songsQueue
-        });
     },
     addSongToQueue: async (song: Song) => {
         await TrackPlayer.add([
@@ -41,6 +43,7 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
                 artist: song.artist,
                 duration: song.duration,
                 title: song.title,
+                artwork: song.artwork,
             }
         ]);
 
@@ -62,6 +65,9 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
         setState({isPlaying: !isPlaying});
     },
     setCurrentSong: (song: Song) => setState({currentSong: song}),
+    seekTo: async (value: number) => {
+        await TrackPlayer.seekTo(value);
+    },
 }))
 
 export default useAudioStore;
