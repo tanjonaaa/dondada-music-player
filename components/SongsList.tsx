@@ -1,17 +1,32 @@
-import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, FlatList, StyleSheet, Text, View, Image} from "react-native";
 import {Song} from "@/types/song";
 import SongItem from "@/components/SongItem";
 import {useTheme} from "@react-navigation/core";
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function SongsList({songs, loading}: { songs: Song[], loading: boolean }) {
 
     const {colors, fonts} = useTheme();
 
     const renderSongItem = ({item, index}: { item: Song, index: number }) => {
-        const formattedIndex = (index + 1).toString().padStart(2, '0');
-
         return (
-            <SongItem song={item} index={formattedIndex}/>
+            <View style={styles.songItemContainer}>
+                <Text style={{
+                    marginVertical: 'auto',
+                    marginLeft: 10,
+                    color: colors.primary,
+                    fontFamily: fonts.medium.fontFamily,
+                    width: "8%"
+                }}>{(index + 1).toString()}</Text>
+                {item.artwork ? (
+                    <Image source={{uri: item.artwork}} style={styles.artwork} />
+                ) : (
+                    <View style={[styles.artwork, styles.placeholderArtwork]}>
+                        <MaterialIcons name="music-note" size={40} color={colors.text} />
+                    </View>
+                )}
+                <SongItem song={item} />
+            </View>
         );
     };
 
@@ -27,7 +42,7 @@ export default function SongsList({songs, loading}: { songs: Song[], loading: bo
         <FlatList
             data={songs}
             renderItem={renderSongItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item.id ?? ''}
             style={styles.list}
             ListEmptyComponent={() => (
                 <View style={styles.emptyContainer}>
@@ -61,5 +76,19 @@ const styles = StyleSheet.create({
     emptyText: {
         fontSize: 16,
         textAlign: 'center',
+    },
+    songItemContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    artwork: {
+        width: 50,
+        height: 50,
+        marginRight: 10,
+    },
+    placeholderArtwork: {
+        backgroundColor: 'rgba(0,0,0,0.1)',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

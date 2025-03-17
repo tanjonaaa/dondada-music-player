@@ -21,8 +21,8 @@ export default function SearchScreen() {
         debounce((query: string) => {
             const normalizedQuery = query.toLowerCase().trim();
             const filtered = songs.filter(song =>
-                song.title.toLowerCase().includes(normalizedQuery) ||
-                song.artist.toLowerCase().includes(normalizedQuery)
+                (song.title && song.title.toLowerCase().includes(normalizedQuery)) ||
+                (song.artist && song.artist.toLowerCase().includes(normalizedQuery))
             );
             setFilteredSongs(filtered);
         }, 300),

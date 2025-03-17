@@ -57,6 +57,6 @@ const localStyles = StyleSheet.create({
         alignSelf: 'center',
     },
     queueIcon: {
-        width: '25%'
+        width: '50%'
     }
 });
