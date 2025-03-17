@@ -1,4 +1,4 @@
-import {Song} from "@/types/song";
+import {mapSongToTrack, Song} from "@/types/song";
 import {create} from "zustand";
 import TrackPlayer from "react-native-track-player";
 
@@ -25,27 +25,11 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
         });
 
         await TrackPlayer.reset();
-        await TrackPlayer.add([
-            {
-                url: song.uri,
-                artist: song.artist,
-                duration: song.duration,
-                title: song.title,
-                artwork: song.artwork,
-            }
-        ]);
+        await TrackPlayer.add([mapSongToTrack(song)]);
         await TrackPlayer.play();
     },
     addSongToQueue: async (song: Song) => {
-        await TrackPlayer.add([
-            {
-                url: song.uri,
-                artist: song.artist,
-                duration: song.duration,
-                title: song.title,
-                artwork: song.artwork,
-            }
-        ]);
+        await TrackPlayer.add([mapSongToTrack(song)]);
 
         setState((state) => ({songsQueue: [...state.songsQueue, song]}));
 
