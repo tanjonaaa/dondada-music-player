@@ -1,12 +1,13 @@
 import {Asset} from "expo-media-library";
+import {Track} from "react-native-track-player";
 
 export interface Song {
-    id: string;
-    title: string;
-    artist: string;
+    id?: string;
+    title?: string;
+    artist?: string;
     uri: string;
-    duration: number;
-    formattedDuration: string;
+    duration?: number;
+    formattedDuration?: string;
 }
 
 export const mapAssetToSong = (asset: Asset): Song => {
@@ -38,7 +39,20 @@ export const mapAssetToSong = (asset: Asset): Song => {
     };
 };
 
-const formatDuration = (seconds: number): string => {
+export const mapTrackToSong = (track: Track): Song => {
+    return {
+        uri: track.url,
+        title: track.title,
+        artist: track.artist,
+        duration: track.duration,
+        formattedDuration: formatDuration(track.duration)
+    }
+}
+
+const formatDuration = (seconds: number | undefined): string => {
+    if (seconds === undefined) {
+        return "";
+    }
     const roundedSeconds = Math.floor(seconds);
     const minutes = Math.floor(roundedSeconds / 60);
     const remainingSeconds = roundedSeconds % 60;
