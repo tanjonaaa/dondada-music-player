@@ -14,6 +14,7 @@ const setupPlayer = async () => {
             Capability.SkipToNext,
             Capability.SkipToPrevious,
             Capability.Stop,
+            Capability.SeekTo
         ],
     })
 
@@ -36,5 +37,10 @@ export const useSetupTrackPlayer = ({ onLoad }: { onLoad?: () => void }) => {
                 isInitialized.current = false
                 console.error(error)
             })
+            
+        // Nettoyage lors du démontage du composant
+        return () => {
+            TrackPlayer.reset();
+        };
     }, [onLoad])
 }
