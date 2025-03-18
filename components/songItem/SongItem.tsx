@@ -1,19 +1,13 @@
 import {
-    Pressable,
     StyleSheet,
     Text,
     TouchableOpacity,
-    useColorScheme,
-    View,
-    Image
 } from "react-native";
 import {styles} from "@/styles/index.styles";
 import {Song} from "@/types/song";
 import useAudioStore from "@/stores/useAudioStore";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {useTheme} from "@react-navigation/core";
-import {useState, useCallback, memo, useMemo} from "react";
-import * as Haptics from 'expo-haptics';
+import {useCallback, memo, useMemo} from "react";
 import SongMetadata from "@/components/songItem/SongMetadata";
 
 const SongItemComponent = ({song, index}: { song: Song, index: string }) => {

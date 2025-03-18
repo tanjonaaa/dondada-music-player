@@ -18,7 +18,7 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
     const handleAddToQueue = useCallback(async () => {
         try {
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            await addSongToQueue(song);
+            await addSongToQueue([song]);
             setTooltipVisible(true);
             setTimeout(() => setTooltipVisible(false), 1000);
         } catch (error) {
