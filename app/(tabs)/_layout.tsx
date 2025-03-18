@@ -1,6 +1,6 @@
 import {Tabs} from 'expo-router';
 import {AntDesign, Ionicons} from '@expo/vector-icons';
-import {StyleSheet, Text} from 'react-native';
+import {StyleSheet, Text, Pressable} from 'react-native';
 import {useTheme} from "@react-navigation/core";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
@@ -26,6 +26,16 @@ export default function TabLayout() {
                 tabBarActiveTintColor: theme.colors.primary,
                 tabBarInactiveTintColor: theme.colors.text,
                 tabBarStyle: styles.tabBar,
+                animation: "fade",
+                tabBarButton: (props) => (
+                    <Pressable 
+                        {...props}
+                        android_ripple={{ 
+                            borderless: true,
+                            radius: 20 
+                        }}
+                    />
+                ),
             }}
         >
             <Tabs.Screen

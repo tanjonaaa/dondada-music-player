@@ -42,4 +42,16 @@ export const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     zIndex: 1000,
   },
+  musicPlayerContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1,
+  },
+  songsListContainer: {
+    flex: 1,
+    width: '100%',
+    paddingBottom: 80,
+  },
 }); 
