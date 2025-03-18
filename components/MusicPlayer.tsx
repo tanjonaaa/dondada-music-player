@@ -4,6 +4,8 @@ import {AntDesign} from "@expo/vector-icons";
 import {useTheme} from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
 import useSongStore from "@/stores/useSongStore";
+import SongArtwork from "@/components/SongArtwork";
+import {unknownTrackImageUri} from "@/types/song";
 
 export default function MusicPlayer() {
     const colorScheme = useColorScheme();
@@ -17,9 +19,8 @@ export default function MusicPlayer() {
     return (
         <TouchableOpacity onPress={() => setSongToShow(currentSong)}>
             <View style={[styles.player, {backgroundColor: musicPlayerBgColor}]}>
-                {currentSong?.artwork && (
-                    <Image 
-                        source={{ uri: currentSong.artwork }}
+                    <SongArtwork
+                        uri={currentSong?.artwork ?? unknownTrackImageUri}
                         style={{
                             width: 50,
                             height: 50,
@@ -31,7 +32,6 @@ export default function MusicPlayer() {
                             borderColor: colorScheme === "dark" ? "#ffffff20" : "#00000020"
                         }}
                     />
-                )}
                 <View style={[styles.songMetadata, { flex: 1 }]}>
                     <Text style={[styles.currentTitle, {
                         color: songTitleColor,
