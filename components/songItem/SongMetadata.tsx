@@ -96,6 +96,7 @@ const localStyles = StyleSheet.create({
         padding: 5,
         borderRadius: 3,
         alignSelf: 'center',
+        width: 150,
     },
     queueIcon: {
         width: "20%"
