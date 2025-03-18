@@ -110,7 +110,7 @@ const MemoizedSongItem = memo(({song, index, isPlaying, playingIndicator}: {
 
 const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) => {
     const {colors, fonts} = useTheme();
-    const { currentSong, isPlaying } = useAudioStore();
+    const { currentSong, isPlaying, isPlayerVisible } = useAudioStore();
     
     const playingIndicatorMemo = useMemo(() => <PlayingIndicator color="white" />, []);
 
@@ -143,7 +143,10 @@ const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) =
             data={songs}
             renderItem={renderItem}
             keyExtractor={keyExtractor}
-            style={styles.list}
+            style={[
+                styles.list, 
+                { marginBottom: isPlayerVisible ? 60 : 0 }
+            ]}
             ListEmptyComponent={renderEmptyComponent}
             removeClippedSubviews={true}
             maxToRenderPerBatch={5}
@@ -166,7 +169,6 @@ const styles = StyleSheet.create({
     },
     list: {
         flex: 1,
-        marginBottom: 60,
     },
     emptyContainer: {
         flex: 1,

@@ -8,17 +8,19 @@ interface AudioState {
   songsQueue: Song[];
   isPlaying: boolean;
   isLoading: boolean;
+  isPlayerVisible: boolean;
 }
 
 interface AudioActions {
   playSong: (song: Song) => Promise<void>;
   addSongToQueue: (songs: Song[]) => Promise<string[]>;
-    removeSongFromQueue: (songId: string) => Promise<void>;
+  removeSongFromQueue: (songId: string) => Promise<void>;
   togglePlayPause: () => Promise<void>;
   setCurrentSong: (song: Song) => void;
   seekTo: (value: number) => Promise<void>;
   skipToNext: () => Promise<void>;
   skipToPrevious: () => Promise<void>;
+  setPlayerVisibility: (visible: boolean) => void;
 }
 
 type AudioStore = AudioState & AudioActions;
@@ -37,13 +39,15 @@ const useAudioStore = create<AudioStore>((set, get) => ({
   songsQueue: [],
   isPlaying: false,
   isLoading: false,
+  isPlayerVisible: false,
 
   playSong: async (song: Song): Promise<void> => {
     try {
       set({
         currentSong: song,
         isPlaying: false,
-        isLoading: true
+        isLoading: true,
+        isPlayerVisible: true
       });
 
       const { songsQueue } = get();
@@ -193,6 +197,8 @@ const useAudioStore = create<AudioStore>((set, get) => ({
       console.error("Erreur lors du passage à la piste précédente:", error);
     }
   },
+
+  setPlayerVisibility: (visible: boolean): void => set({ isPlayerVisible: visible }),
 }));
 
 export const setupPlayerListeners = () => {
