@@ -2,7 +2,7 @@ import {memo, useCallback, useState} from "react";
 import {Song, unknownTrackImageUri} from "@/types/song";
 import {useTheme} from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
-import {StyleSheet, Text, useColorScheme, View} from "react-native";
+import {StyleSheet, Text, useColorScheme, View, ActivityIndicator} from "react-native";
 import * as Haptics from "expo-haptics";
 import {styles} from "@/styles/index.styles";
 import SongArtwork from "@/components/SongArtwork";

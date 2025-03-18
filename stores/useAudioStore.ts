@@ -1,117 +1,231 @@
-import {mapSongToTrack, Song} from "@/types/song";
-import {create} from "zustand";
+import { create } from "zustand";
 import TrackPlayer from "react-native-track-player";
+import { mapSongToTrack, Song } from "@/types/song";
+import { Event } from "react-native-track-player";
 
-interface AudioContextType {
-    currentSong: Song | null;
-    songsQueue: Song[];
-    isPlaying: boolean;
-    playSong: (song: Song) => void;
-    addSongToQueue: (songs: Song[]) => Promise<string[]>;
-    removeSongFromQueue: (songId: string) => Promise<void>;
-    togglePlayPause: () => Promise<void>;
-    setCurrentSong: (song: Song) => void;
-    seekTo: (value: number) => Promise<void>;
+interface AudioState {
+  currentSong: Song | null;
+  songsQueue: Song[];
+  isPlaying: boolean;
+  isLoading: boolean;
 }
 
-const useAudioStore = create<AudioContextType>((setState, getState) => ({
-    currentSong: null,
-    songsQueue: [],
-    isPlaying: false,
-    playSong: async (song: Song) => {
-        try {
-            setState({
-                currentSong: song,
-                isPlaying: false
-            });
+interface AudioActions {
+  playSong: (song: Song) => Promise<void>;
+  addSongToQueue: (songs: Song[]) => Promise<string[]>;
+    removeSongFromQueue: (songId: string) => Promise<void>;
+  togglePlayPause: () => Promise<void>;
+  setCurrentSong: (song: Song) => void;
+  seekTo: (value: number) => Promise<void>;
+  skipToNext: () => Promise<void>;
+  skipToPrevious: () => Promise<void>;
+}
 
-            const trackData = {
-                url: song.uri,
-                artist: song.artist,
-                duration: song.duration,
-                title: song.title,
-                artwork: song.artwork,
-            };
+type AudioStore = AudioState & AudioActions;
 
-            await TrackPlayer.reset();
-            await TrackPlayer.add([trackData]);
-            await TrackPlayer.play();
+/**
+ * Vérifie si une chanson est déjà présente dans la file d'attente
+ */
+const isPresentInQueue = (queue: Song[], id: string | undefined): boolean => 
+  queue.some(song => song.id === id);
 
-            setState({isPlaying: true});
+/**
+ * Store Zustand pour gérer l'état et les actions liées à l'audio
+ */
+const useAudioStore = create<AudioStore>((set, get) => ({
+  currentSong: null,
+  songsQueue: [],
+  isPlaying: false,
+  isLoading: false,
 
-        } catch (error) {
-            console.error("Erreur lors de la lecture:", error);
-            setState({
-                isPlaying: false,
-                currentSong: getState().currentSong
-            });
-        }
-    },
-    addSongToQueue: async (songs: Song[]) => {
-        const newSongs: Song[] = [];
-        const messages: string[] = [];
+  playSong: async (song: Song): Promise<void> => {
+    try {
+      set({
+        currentSong: song,
+        isPlaying: false,
+        isLoading: true
+      });
 
-        for (const song of songs) {
-            if (!isPresentInQueue(getState().songsQueue, song.id)) {
-                await TrackPlayer.add(mapSongToTrack(song));
-                newSongs.push(song);
-                messages.push("Ajouté à la file");
-            } else {
-                messages.push("Déjà présent dans la file");
-            }
-        }
+      const { songsQueue } = get();
+      
+      await TrackPlayer.reset();
+      
+      const selectedIndex = songsQueue.findIndex(s => s.id === song.id);
+      
+      if (selectedIndex >= 0) {
+        const tracksToAdd = songsQueue.slice(selectedIndex).map(mapSongToTrack);
+        await TrackPlayer.add(tracksToAdd);
+      } else {
+        const trackData = mapSongToTrack(song);
+        await TrackPlayer.add([trackData]);
+      }
+      
+      await TrackPlayer.play();
 
-        if (newSongs.length > 0) {
-            setState((state) => ({
-                songsQueue: [...state.songsQueue, ...newSongs]
-            }));
-        }
+      set({ isPlaying: true, isLoading: false });
+    } catch (error) {
+      console.error("Erreur lors de la lecture:", error);
+      set({
+        isPlaying: false,
+        isLoading: false,
+        currentSong: get().currentSong
+      });
+    }
+  },
 
-        if (!getState().currentSong && songs.length > 0) {
-            getState().playSong(songs[0]);
-        }
+  addSongToQueue: async (songs: Song[]): Promise<string[]> => {
+    const { songsQueue, currentSong, playSong } = get();
+    const messages: string[] = [];
 
-        return messages;
-    },
+    // Traitement des chansons en lot pour éviter les mises à jour d'état multiples
+    const newSongs: Song[] = [];
+    
+    for (const song of songs) {
+      if (!isPresentInQueue(songsQueue, song.id)) {
+        newSongs.push(song);
+        messages.push("Ajouté à la file");
+      } else {
+        messages.push("Déjà présent dans la file");
+      }
+    }
+
+    if (newSongs.length > 0) {
+      try {
+        await TrackPlayer.add(newSongs.map(mapSongToTrack));
+        set({ songsQueue: [...songsQueue, ...newSongs] });
+      } catch (error) {
+        console.error("Erreur lors de l'ajout à la file:", error);
+      }
+    }
+
+    // Jouer la première chanson si aucune n'est en cours
+    if (!currentSong && songs.length > 0 && songs.length > 0) {
+      await playSong(songs[0]);
+    }
+
+    return messages;
+  },
     removeSongFromQueue: async (songId: string) => {
-        const state = getState();
-        const songIndex = state.songsQueue.findIndex(song => song.id === songId);
+        const { songsQueue } = get();
+        const songIndex = songsQueue.findIndex((song: Song) => song.id === songId);
 
         const currentTrackIndex = await TrackPlayer.getActiveTrackIndex();
 
         if (currentTrackIndex === songIndex) {
             await TrackPlayer.stop();
-            setState({currentSong: null, isPlaying: false});
+            set({currentSong: null, isPlaying: false});
         }
 
         await TrackPlayer.remove([songIndex]);
 
-        setState((state) => ({
-            songsQueue: state.songsQueue.filter(song => song.id !== songId)
-        }));
+        set({
+            songsQueue: songsQueue.filter((song: Song) => song.id !== songId)
+        });
     },
-    togglePlayPause: async () => {
-        const {isPlaying} = getState();
 
-        try {
-            if (isPlaying) {
-                await TrackPlayer.pause();
-            } else {
-                await TrackPlayer.play();
-            }
-            setState({isPlaying: !isPlaying});
-        } catch (error) {
-            console.error("Erreur lors du toggle play/pause:", error);
+  togglePlayPause: async (): Promise<void> => {
+    const { isPlaying } = get();
+
+    try {
+      if (isPlaying) {
+        await TrackPlayer.pause();
+      } else {
+        await TrackPlayer.play();
+      }
+      set({ isPlaying: !isPlaying });
+    } catch (error) {
+      console.error("Erreur lors du toggle play/pause:", error);
+    }
+  },
+
+  setCurrentSong: (song: Song): void => set({ currentSong: song }),
+  
+  seekTo: async (value: number): Promise<void> => {
+    try {
+      await TrackPlayer.seekTo(value);
+    } catch (error) {
+      console.error("Erreur lors du seek:", error);
+    }
+  },
+
+  skipToNext: async (): Promise<void> => {
+    try {
+      await TrackPlayer.skipToNext();
+      const trackIndex = await TrackPlayer.getActiveTrackIndex();
+      if (trackIndex !== null && trackIndex !== undefined) {
+        const track = await TrackPlayer.getTrack(trackIndex);
+        if (track) {
+          const songTrack: Song = {
+            id: track.id,
+            title: track.title || '',
+            artist: track.artist || '',
+            artwork: track.artwork || '',
+            uri: track.url || '',
+            duration: track.duration || 0
+          };
+          set({ currentSong: songTrack });
         }
-    },
-    setCurrentSong: (song: Song) => setState({currentSong: song}),
-    seekTo: async (value: number) => {
-        await TrackPlayer.seekTo(value);
-    },
-}))
+      }
+    } catch (error) {
+      console.error("Erreur lors du passage à la piste suivante:", error);
+    }
+  },
 
-const isPresentInQueue = (queue: Song[], id: string | undefined) => {
-    return queue.some(song => song.id === id);
-}
+  skipToPrevious: async (): Promise<void> => {
+    try {
+      await TrackPlayer.skipToPrevious();
+      const index = await TrackPlayer.getCurrentTrack();
+      if (index !== null) {
+        const track = await TrackPlayer.getTrack(index);
+        if (track) {
+          const songTrack: Song = {
+            id: track.id,
+            title: track.title || '',
+            artist: track.artist || '',
+            artwork: track.artwork || '',
+            uri: track.url || '',
+            duration: track.duration || 0
+          };
+          set({ currentSong: songTrack });
+        }
+      }
+    } catch (error) {
+      console.error("Erreur lors du passage à la piste précédente:", error);
+    }
+  },
+}));
+
+export const setupPlayerListeners = () => {
+  const { setCurrentSong, skipToNext } = useAudioStore.getState();
+  
+  const setupPlayer = async () => {
+    TrackPlayer.addEventListener(Event.PlaybackQueueEnded, () => {
+      skipToNext();
+    });
+    
+    TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async (event) => {
+      if (event.track !== null && typeof event.track === 'number') {
+        const track = await TrackPlayer.getTrack(event.track);
+        if (track) {
+          const songTrack: Song = {
+            id: track.id,
+            title: track.title || '',
+            artist: track.artist || '',
+            artwork: track.artwork || '',
+            uri: track.url || '',
+            duration: track.duration || 0
+          };
+          setCurrentSong(songTrack);
+        }
+      }
+    });
+  };
+  
+  setupPlayer();
+  
+  return () => {
+    TrackPlayer.reset();
+  };
+};
 
 export default useAudioStore;

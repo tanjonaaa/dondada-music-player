@@ -1,57 +1,97 @@
-import {Text, TouchableOpacity, useColorScheme, View, Image} from "react-native";
-import {styles} from "@/styles/index.styles";
-import {AntDesign} from "@expo/vector-icons";
-import {useTheme} from "@react-navigation/core";
+import React, { useCallback } from 'react';
+import { Text, TouchableOpacity, useColorScheme, View, Image, ActivityIndicator } from "react-native";
+import { styles } from "@/styles/index.styles";
+import { AntDesign } from "@expo/vector-icons";
+import { useTheme } from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
 import useSongStore from "@/stores/useSongStore";
 import SongArtwork from "@/components/SongArtwork";
-import {unknownTrackImageUri} from "@/types/song";
+import { unknownTrackImageUri } from "@/types/song";
 
-export default function MusicPlayer() {
+/**
+ * Composant de lecteur de musique affichant les informations de la chanson en cours
+ * et les contrôles de lecture
+ */
+const MusicPlayer: React.FC = React.memo(() => {
     const colorScheme = useColorScheme();
-    const {colors, fonts} = useTheme();
-    const {currentSong, togglePlayPause, isPlaying} = useAudioStore();
-    const {setSongToShow} = useSongStore();
+    const { colors, fonts } = useTheme();
+    const { currentSong, togglePlayPause, isPlaying, isLoading } = useAudioStore();
+    const { setSongToShow } = useSongStore();
 
+    // Calcul des styles basés sur le thème
     const songTitleColor = colorScheme === "dark" ? colors.primary : colors.background;
     const musicPlayerBgColor = colorScheme === "dark" ? "#2a2e42" : colors.primary;
+    
+    // Utilisation de useCallback pour les gestionnaires d'événements
+    const handleSongPress = useCallback(() => {
+        if (currentSong) {
+            setSongToShow(currentSong);
+        }
+    }, [currentSong, setSongToShow]);
+    
+    const handlePlayPausePress = useCallback(() => {
+        togglePlayPause();
+    }, [togglePlayPause]);
+
+    // Styles extraits pour améliorer la lisibilité
+    const artworkStyle = {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        marginRight: 12,
+        marginLeft: -40,
+        marginTop: -6,
+        borderWidth: 2,
+        borderColor: colorScheme === "dark" ? "#ffffff20" : "#00000020"
+    };
+    
+    const titleStyle = {
+        color: songTitleColor,
+        fontFamily: fonts.bold.fontFamily
+    };
+    
+    const artistStyle = {
+        color: colors.text,
+        fontFamily: fonts.regular.fontFamily
+    };
 
     return (
-        <TouchableOpacity onPress={() => setSongToShow(currentSong)}>
-            <View style={[styles.player, {backgroundColor: musicPlayerBgColor}]}>
-                    <SongArtwork
-                        uri={currentSong?.artwork ?? unknownTrackImageUri}
-                        style={{
-                            width: 50,
-                            height: 50,
-                            borderRadius: 25,
-                            marginRight: 12,
-                            marginLeft: -40,
-                            marginTop: -6,
-                            borderWidth: 2,
-                            borderColor: colorScheme === "dark" ? "#ffffff20" : "#00000020"
-                        }}
-                    />
+        <TouchableOpacity onPress={handleSongPress}>
+            <View style={[styles.player, { backgroundColor: musicPlayerBgColor }]}>
+                <SongArtwork
+                    uri={currentSong?.artwork ?? unknownTrackImageUri}
+                    style={artworkStyle}
+                    key={currentSong?.uri ?? 'unknown'}
+                />
                 <View style={[styles.songMetadata, { flex: 1 }]}>
-                    <Text style={[styles.currentTitle, {
-                        color: songTitleColor,
-                        fontFamily: fonts.bold.fontFamily
-                    }]}
-                          numberOfLines={1}>
+                    <Text 
+                        style={[styles.currentTitle, titleStyle]}
+                        numberOfLines={1}
+                    >
                         {currentSong?.title}
                     </Text>
-                    <Text style={{color: colors.text, fontFamily: fonts.regular.fontFamily}}>
+                    <Text style={artistStyle}>
                         {currentSong?.artist}
                     </Text>
                 </View>
-                <TouchableOpacity onPress={togglePlayPause}>
-                    <AntDesign
-                        name={isPlaying ? "pause" : "play"}
-                        size={24}
-                        color={colors.text}
-                    />
-                </TouchableOpacity>
+                
+                {isLoading ? (
+                    <ActivityIndicator size="small" color={colors.text} />
+                ) : (
+                    <TouchableOpacity onPress={handlePlayPausePress}>
+                        <AntDesign
+                            name={isPlaying ? "pause" : "play"}
+                            size={24}
+                            color={colors.text}
+                        />
+                    </TouchableOpacity>
+                )}
             </View>
         </TouchableOpacity>
-    )
-}
+    );
+});
+
+// Définir un displayName pour faciliter le débogage
+MusicPlayer.displayName = 'MusicPlayer';
+
+export default MusicPlayer;

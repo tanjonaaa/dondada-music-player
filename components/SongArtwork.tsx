@@ -13,8 +13,9 @@ const SongArtwork: React.FC<SongArtworkProps> = ({ uri, style }) => {
 
     return (
         <Image
+            source={{ uri: source }}
             style={[defaultStyles.artwork, style]}
-            source={source}
+            key={uri}
             onError={() => setSource(unknownTrackImageUri)}
         />
     );
@@ -22,8 +23,10 @@ const SongArtwork: React.FC<SongArtworkProps> = ({ uri, style }) => {
 
 const defaultStyles = StyleSheet.create({
     artwork: {
-        resizeMode: 'cover',
+        width: 50,
+        height: 50,
+        borderRadius: 4,
     },
 });
 
-export default SongArtwork;
+export default React.memo(SongArtwork);
