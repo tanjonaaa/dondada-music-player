@@ -5,10 +5,11 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import usePlaylistStore from '@/stores/usePlaylistStore';
 import CreatePlaylistModal from '@/components/CreatePlaylistModal';
 import { useMediaLibrary } from '@/hooks/useMediaLibrary';
-import { mapAssetToSong } from '@/types/song';
+import {mapAssetToSong, unknownTrackImageUri} from '@/types/song';
 import { Playlist } from '@/types/playlist';
 import PlaylistDetails from '@/components/PlaylistDetails';
 import GlobalMusicPlayer from '@/components/GlobalMusicPlayer';
+import SongArtwork from "@/components/SongArtwork";
 
 export default function Playlists() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -28,16 +29,10 @@ export default function Playlists() {
         
         return (
             <View style={[styles.playlistCard, { backgroundColor: colors.card }]}>
-                {playlistArtwork ? (
-                    <Image 
-                        source={{ uri: playlistArtwork }} 
-                        style={styles.playlistArtwork}
-                    />
-                ) : (
-                    <View style={[styles.playlistArtworkPlaceholder, { backgroundColor: colors.border }]}>
-                        <MaterialIcons name="music-note" size={40} color={colors.text} />
-                    </View>
-                )}
+                <SongArtwork
+                    uri={playlistArtwork ?? unknownTrackImageUri}
+                    style={styles.playlistArtwork}
+                />
                 <Pressable
                     style={styles.playlistContent}
                     onPress={() => setSelectedPlaylist(item)}

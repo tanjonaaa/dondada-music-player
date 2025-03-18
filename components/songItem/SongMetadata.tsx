@@ -1,11 +1,12 @@
 import {memo, useCallback, useState} from "react";
-import {Song} from "@/types/song";
+import {Song, unknownTrackImageUri} from "@/types/song";
 import {useTheme} from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
-import {Image, Pressable, StyleSheet, Text, useColorScheme, View} from "react-native";
+import {Pressable, StyleSheet, Text, useColorScheme, View} from "react-native";
 import * as Haptics from "expo-haptics";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {styles} from "@/styles/index.styles";
+import SongArtwork from "@/components/SongArtwork";
 
 const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: boolean }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -27,13 +28,15 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
 
     return (
         <View style={localStyles.songItemContent}>
-            {song.artwork ? (
-                <Image source={{uri: song.artwork}} style={localStyles.artwork}/>
-            ) : (
-                <View style={[localStyles.artwork, localStyles.placeholderArtwork]}>
-                    <MaterialIcons name="music-note" size={40} color={colors.text}/>
-                </View>
-            )}
+            <SongArtwork
+                uri={song.artwork ?? unknownTrackImageUri}
+                style={{
+                    width: 50,
+                    height: 50,
+                    borderRadius: 4,
+                    marginRight: 10,
+                }}
+            />
             <View style={localStyles.songMetadata}>
                 <Text style={{
                     color: colors.primary,
