@@ -7,7 +7,7 @@ interface AudioContextType {
     songsQueue: Song[];
     isPlaying: boolean;
     playSong: (song: Song) => void;
-    addSongToQueue: (songs: Song[]) => Promise<void>;
+    addSongToQueue: (songs: Song[]) => Promise<string[]>;
     togglePlayPause: () => Promise<void>;
     setCurrentSong: (song: Song) => void;
     seekTo: (value: number) => Promise<void>;
@@ -35,36 +35,40 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
             await TrackPlayer.reset();
             await TrackPlayer.add([trackData]);
             await TrackPlayer.play();
-            
-            setState({ isPlaying: true });
-            
+
+            setState({isPlaying: true});
+
         } catch (error) {
             console.error("Erreur lors de la lecture:", error);
-            setState({ 
+            setState({
                 isPlaying: false,
-                currentSong: getState().currentSong 
+                currentSong: getState().currentSong
             });
         }
     },
     addSongToQueue: async (songs: Song[]) => {
-        const trackData = songs.map(mapSongToTrack);
-
-        try {
-            await TrackPlayer.add(trackData);
-            setState((state) => ({
-                songsQueue: [...state.songsQueue, ...songs]
-            }));
-
-            if (!getState().currentSong) {
-                getState().playSong(songs[0]);
+        const messages = songs.map(song => {
+            let message = "Déjà présent dans la file";
+            if (!isPresentInQueue(getState().songsQueue, song.id)) {
+                TrackPlayer.add(mapSongToTrack(song)).then(() => {
+                    setState((state) => ({
+                        songsQueue: [...state.songsQueue, song]
+                    }));
+                })
+                message = "Ajouté à la file";
             }
-        } catch (error) {
-            console.error("Erreur lors de l'ajout à la file d'attente:", error);
+            return message;
+        })
+
+        if (!getState().currentSong) {
+            getState().playSong(songs[0]);
         }
+
+        return messages;
     },
     togglePlayPause: async () => {
         const {isPlaying} = getState();
-        
+
         try {
             if (isPlaying) {
                 await TrackPlayer.pause();
@@ -81,5 +85,9 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
         await TrackPlayer.seekTo(value);
     },
 }))
+
+const isPresentInQueue = (queue: Song[], id: string | undefined) => {
+    return queue.some(song => song.id === id);
+}
 
 export default useAudioStore;
