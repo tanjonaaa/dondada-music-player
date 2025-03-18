@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Text, TouchableOpacity, useColorScheme, View, Image, ActivityIndicator } from "react-native";
 import { styles } from "@/styles/index.styles";
 import { AntDesign } from "@expo/vector-icons";
@@ -15,8 +15,14 @@ import { unknownTrackImageUri } from "@/types/song";
 const MusicPlayer: React.FC = React.memo(() => {
     const colorScheme = useColorScheme();
     const { colors, fonts } = useTheme();
-    const { currentSong, togglePlayPause, isPlaying, isLoading } = useAudioStore();
+    const { currentSong, togglePlayPause, isPlaying, isLoading, setPlayerVisibility } = useAudioStore();
     const { setSongToShow } = useSongStore();
+
+    // Mettre à jour la visibilité du lecteur quand le composant est monté/démonté
+    useEffect(() => {
+        setPlayerVisibility(true);
+        return () => setPlayerVisibility(false);
+    }, [setPlayerVisibility]);
 
     // Calcul des styles basés sur le thème
     const songTitleColor = colorScheme === "dark" ? colors.primary : colors.background;
