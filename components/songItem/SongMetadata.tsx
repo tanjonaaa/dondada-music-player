@@ -2,17 +2,17 @@ import {memo, useCallback, useState} from "react";
 import {Song, unknownTrackImageUri} from "@/types/song";
 import {useTheme} from "@react-navigation/core";
 import useAudioStore from "@/stores/useAudioStore";
-import {Pressable, StyleSheet, Text, useColorScheme, View} from "react-native";
+import {StyleSheet, Text, useColorScheme, View} from "react-native";
 import * as Haptics from "expo-haptics";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {styles} from "@/styles/index.styles";
 import SongArtwork from "@/components/SongArtwork";
+import QueueButton from "@/components/songItem/QueueButton";
 
 const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: boolean }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const [tooltipMessage, setTooltipMessage] = useState<string>();
     const {colors, fonts} = useTheme();
-    const {addSongToQueue} = useAudioStore();
+    const {addSongToQueue, removeSongFromQueue} = useAudioStore();
     const colorScheme = useColorScheme();
     const tooltipBgColor = colorScheme === 'dark' ? "#2a2e42" : colors.primary;
 
@@ -23,6 +23,14 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
             setTooltipMessage(message[0]);
             setTooltipVisible(true);
             setTimeout(() => setTooltipVisible(false), 1000);
+        } catch (error) {
+            console.error("Erreur lors de l'ajout à la file d'attente:", error);
+        }
+    }, [song, addSongToQueue]);
+
+    const handleRemoveFromQueue = useCallback(async () => {
+        try {
+            await removeSongFromQueue(song.id!);
         } catch (error) {
             console.error("Erreur lors de l'ajout à la file d'attente:", error);
         }
@@ -51,28 +59,13 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
                     opacity: isLoading ? 0.5 : 1,
                 }]}>{song.artist} - {song.formattedDuration}</Text>
             </View>
-            <Pressable
-                onPress={handleAddToQueue}
-                disabled={isLoading}
-                style={({pressed}) => [
-                    localStyles.queueIcon,
-                    {opacity: pressed || isLoading ? 0.5 : 1}
-                ]}
-            >
-                <MaterialIcons
-                    name="queue-music"
-                    color={colors.primary}
-                    size={25}
-                    style={{marginHorizontal: 'auto'}}
-                />
-                {tooltipVisible && (
-                    <View style={[localStyles.tooltip, {backgroundColor: tooltipBgColor}]}>
-                        <Text style={{color: colors.text, fontFamily: fonts.regular.fontFamily}}>
-                            {tooltipMessage}
-                        </Text>
-                    </View>
-                )}
-            </Pressable>
+            <QueueButton
+                handleAddToQueue={handleAddToQueue}
+                handleRemoveFromQueue={handleRemoveFromQueue}
+                isLoading={isLoading}
+                tooltipVisible={tooltipVisible}
+                tooltipMessage={tooltipMessage}
+            />
         </View>
     );
 });

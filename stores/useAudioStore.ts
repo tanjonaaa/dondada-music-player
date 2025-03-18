@@ -8,6 +8,7 @@ interface AudioContextType {
     isPlaying: boolean;
     playSong: (song: Song) => void;
     addSongToQueue: (songs: Song[]) => Promise<string[]>;
+    removeSongFromQueue: (songId: string) => Promise<void>;
     togglePlayPause: () => Promise<void>;
     setCurrentSong: (song: Song) => void;
     seekTo: (value: number) => Promise<void>;
@@ -71,6 +72,23 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
         }
 
         return messages;
+    },
+    removeSongFromQueue: async (songId: string) => {
+        const state = getState();
+        const songIndex = state.songsQueue.findIndex(song => song.id === songId);
+
+        const currentTrackIndex = await TrackPlayer.getActiveTrackIndex();
+
+        if (currentTrackIndex === songIndex) {
+            await TrackPlayer.stop();
+            setState({currentSong: null, isPlaying: false});
+        }
+
+        await TrackPlayer.remove([songIndex]);
+
+        setState((state) => ({
+            songsQueue: state.songsQueue.filter(song => song.id !== songId)
+        }));
     },
     togglePlayPause: async () => {
         const {isPlaying} = getState();
