@@ -9,8 +9,13 @@ export default function Queue() {
 
     return (
         <View style={styles.container}>
-            <GlobalMusicPlayer />
-            <SongsList songs={songsQueue} loading={false}/>
+            <View style={styles.musicPlayerContainer}>
+                <GlobalMusicPlayer />
+            </View>
+            
+            <View style={styles.songsListContainer}>
+                <SongsList songs={songsQueue} loading={false}/>
+            </View>
         </View>
     )
 }

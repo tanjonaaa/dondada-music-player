@@ -19,6 +19,19 @@ export const styles = StyleSheet.create({
         paddingHorizontal: 12,
         fontSize: 16,
     },
+    musicPlayerContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1,
+    },
+    songsListContainer: {
+        flex: 1,
+        width: '100%',
+        marginBottom: 100, // Espace pour le lecteur de musique
+        zIndex: 2,
+    },
     list: {
         flex: 1,
     },

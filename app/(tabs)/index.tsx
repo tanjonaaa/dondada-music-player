@@ -49,14 +49,25 @@ export default function Index() {
         return () => backHandler.remove();
     }, [isFocused, songToShow]);
 
+    // Si les détails de la chanson sont affichés, ne montrer que SongDetails
+    if (songToShow && currentSong) {
+        return (
+            <View style={styles.container}>
+                <SongDetails song={currentSong} />
+            </View>
+        );
+    }
+
+    // Sinon, afficher la liste des chansons et le lecteur de musique
     return (
         <View style={styles.container}>
-            <GlobalMusicPlayer />
-            <SongsList songs={songs} loading={loading}/>
-
-            {(songToShow && currentSong) && (
-                <SongDetails song={currentSong} />
-            )}
+            <View style={styles.musicPlayerContainer}>
+                <GlobalMusicPlayer />
+            </View>
+            
+            <View style={styles.songsListContainer}>
+                <SongsList songs={songs} loading={loading}/>
+            </View>
         </View>
     );
 }

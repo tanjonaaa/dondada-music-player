@@ -1,5 +1,5 @@
 import {Song, unknownTrackImageUri} from "@/types/song";
-import {StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View, SafeAreaView} from "react-native";
 import {useTheme} from "@react-navigation/core";
 import SongDetailsHeader from "@/components/songDetails/SongDetailsHeader";
 import SongControl from "@/components/songDetails/songControl/SongControl";
@@ -9,7 +9,7 @@ export function SongDetails({song}: { song: Song }) {
     const {colors, fonts} = useTheme();
 
     return (
-        <View style={[localStyles.container, {backgroundColor: colors.background}]}>
+        <SafeAreaView style={[localStyles.container, {backgroundColor: colors.background}]}>
             <SongDetailsHeader/>
             <View style={localStyles.songMetadata}>
                 <SongArtwork
@@ -38,7 +38,7 @@ export function SongDetails({song}: { song: Song }) {
                 </View>
                 <SongControl/>
             </View>
-        </View>
+        </SafeAreaView>
     )
 }
 
@@ -46,14 +46,17 @@ const localStyles = StyleSheet.create(
     {
         container: {
             height: "100%",
+            paddingTop: 20,
         },
         songMetadata: {
             display: "flex",
             flexDirection: "column",
             height: "100%",
-            marginVertical: "10%",
+            marginTop: "15%",
+            marginBottom: "10%",
             marginHorizontal: "5%",
             gap: 50,
+            justifyContent: "flex-start",
         },
         songTitle: {
             textAlign: 'center',

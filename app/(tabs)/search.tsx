@@ -61,29 +61,32 @@ export default function SearchScreen() {
                 />
             </View>
 
-            <GlobalMusicPlayer />
+            <View style={styles.musicPlayerContainer}>
+                <GlobalMusicPlayer />
+            </View>
 
-            {searchQuery.trim() ? (
-                <SongsList songs={filteredSongs} loading={loading}/>
-            ) : (
-                <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    paddingTop: 40,
-                }}>
-                    <Text style={
-                        {
-                            color: colors.text,
-                            fontFamily: fonts.medium.fontFamily,
-                            fontSize: 16,
-                            textAlign: 'center',
-                        }
-                    }>
-                        No recent searches
-                    </Text>
-                </View>
-            )}
+            <View style={styles.songsListContainer}>
+                {searchQuery.trim() ? (
+                    <SongsList songs={filteredSongs} loading={loading}/>
+                ) : (
+                    <View style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        paddingTop: 40,
+                    }}>
+                        <Text style={
+                            {
+                                color: colors.text,
+                                fontFamily: fonts.medium.fontFamily,
+                                fontSize: 16,
+                                textAlign: 'center',
+                            }
+                        }>
+                            No recent searches
+                        </Text>
+                    </View>
+                )}
+            </View>
         </View>
     );
 }
