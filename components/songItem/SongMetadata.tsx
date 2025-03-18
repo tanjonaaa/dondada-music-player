@@ -1,13 +1,13 @@
-import {Pressable, StyleSheet, Text, TouchableOpacity, useColorScheme, View, ActivityIndicator} from "react-native";
-import {styles} from "@/styles/index.styles";
+import {memo, useCallback, useState} from "react";
 import {Song} from "@/types/song";
-import useAudioStore from "@/stores/useAudioStore";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {useTheme} from "@react-navigation/core";
-import {useState, useCallback, memo, useMemo} from "react";
-import * as Haptics from 'expo-haptics';
+import useAudioStore from "@/stores/useAudioStore";
+import {Image, Pressable, StyleSheet, Text, useColorScheme, View} from "react-native";
+import * as Haptics from "expo-haptics";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import {styles} from "@/styles/index.styles";
 
-const SongMetadata = memo(({song, isLoading}: { song: Song, isLoading: boolean }) => {
+const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: boolean }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
     const {colors, fonts} = useTheme();
     const {addSongToQueue} = useAudioStore();
@@ -27,6 +27,13 @@ const SongMetadata = memo(({song, isLoading}: { song: Song, isLoading: boolean }
 
     return (
         <View style={localStyles.songItemContent}>
+            {song.artwork ? (
+                <Image source={{uri: song.artwork}} style={localStyles.artwork}/>
+            ) : (
+                <View style={[localStyles.artwork, localStyles.placeholderArtwork]}>
+                    <MaterialIcons name="music-note" size={40} color={colors.text}/>
+                </View>
+            )}
             <View style={localStyles.songMetadata}>
                 <Text style={{
                     color: colors.primary,
@@ -39,7 +46,7 @@ const SongMetadata = memo(({song, isLoading}: { song: Song, isLoading: boolean }
                     opacity: isLoading ? 0.5 : 1,
                 }]}>{song.artist} - {song.formattedDuration}</Text>
             </View>
-            <Pressable 
+            <Pressable
                 onPress={handleAddToQueue}
                 disabled={isLoading}
                 style={({pressed}) => [
@@ -47,10 +54,10 @@ const SongMetadata = memo(({song, isLoading}: { song: Song, isLoading: boolean }
                     {opacity: pressed || isLoading ? 0.5 : 1}
                 ]}
             >
-                <MaterialIcons 
-                    name="queue-music" 
-                    color={colors.primary} 
-                    size={25} 
+                <MaterialIcons
+                    name="queue-music"
+                    color={colors.primary}
+                    size={25}
                     style={{marginHorizontal: 'auto'}}
                 />
                 {tooltipVisible && (
@@ -65,52 +72,20 @@ const SongMetadata = memo(({song, isLoading}: { song: Song, isLoading: boolean }
     );
 });
 
-const SongItemComponent = ({song}: { song: Song }) => {
-    const {colors, fonts} = useTheme();
-    const {playSong, currentSong} = useAudioStore();
-    
-    const isCurrentSong = useMemo(() => 
-        currentSong?.uri === song.uri, 
-        [currentSong?.uri, song.uri]
-    );
+const SongMetadata = memo(SongMetadataComponent);
 
-    const handlePress = useCallback(async () => {
-        if (isCurrentSong) return;
-        
-        try {
-            playSong(song);
-        } catch (error) {
-            console.error("Erreur lors de la lecture:", error);
-        }
-    }, [song, isCurrentSong, playSong]);
-
-    return (
-        <TouchableOpacity
-            style={[
-                styles.songItem,
-                isCurrentSong && localStyles.currentSongItem
-            ]}
-            onPress={handlePress}
-            activeOpacity={0.7}
-        >
-            <SongMetadata song={song} isLoading={false} />
-        </TouchableOpacity>
-    );
-};
-
-const SongItem = memo(SongItemComponent);
-
-export default SongItem;
+export default SongMetadata;
 
 const localStyles = StyleSheet.create({
     songItemContent: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "center",
         width: "80%",
     },
     songMetadata: {
-        width: "80%"
+        width: "75%"
     },
     tooltip: {
         position: 'absolute',
@@ -120,10 +95,7 @@ const localStyles = StyleSheet.create({
         alignSelf: 'center',
     },
     queueIcon: {
-        width: '50%'
-    },
-    currentSongItem: {
-        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        width: "20%"
     },
     loadingOverlay: {
         position: 'absolute',
@@ -131,5 +103,17 @@ const localStyles = StyleSheet.create({
         top: '50%',
         transform: [{translateY: -12}],
         zIndex: 2,
-    }
+    },
+    artwork: {
+        width: 50,
+        height: 50,
+        borderRadius: 4,
+        marginRight: 10,
+    },
+    placeholderArtwork: {
+        backgroundColor: 'rgba(0,0,0,0.05)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
+

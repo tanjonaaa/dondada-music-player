@@ -1,22 +1,21 @@
-import {ActivityIndicator, FlatList, StyleSheet, Text, View, Image, Pressable} from "react-native";
+import {ActivityIndicator, FlatList, StyleSheet, Text, View} from "react-native";
 import {Song} from "@/types/song";
-import SongItem from "@/components/SongItem";
+import SongItem from "@/components/songItem/SongItem";
 import {useTheme} from "@react-navigation/native";
 import {memo, useCallback, useMemo} from 'react';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import useAudioStore from "@/stores/useAudioStore";
 
-const LoadingView = memo(({color}: {color: string}) => (
+const LoadingView = memo(({color}: { color: string }) => (
     <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={color}/>
     </View>
 ));
 
-const EmptyView = memo(({colors, fonts}: {colors: any, fonts: any}) => (
+const EmptyView = memo(({colors, fonts}: { colors: any, fonts: any }) => (
     <View style={styles.emptyContainer}>
         <Text style={[
             styles.emptyText,
-            { color: colors.text, fontFamily: fonts.medium.fontFamily }
+            {color: colors.text, fontFamily: fonts.medium.fontFamily}
         ]}>
             No results found
         </Text>
@@ -24,44 +23,19 @@ const EmptyView = memo(({colors, fonts}: {colors: any, fonts: any}) => (
 ));
 
 const getItemLayout = (_: any, index: number) => ({
-    length: 72, 
+    length: 72,
     offset: 72 * index,
     index,
 });
+
+const formatIndex = (index: number) => (index + 1).toString().padStart(2, '0');
 
 const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) => {
     const {colors, fonts} = useTheme();
     const {addSongToQueue} = useAudioStore();
 
-    const renderItem = useCallback(({item, index}: {item: Song, index: number}) => (
-        <View style={styles.songItemContainer}>
-            <Text style={{
-                marginVertical: 'auto',
-                marginLeft: 10,
-                color: colors.primary,
-                fontFamily: fonts.medium.fontFamily,
-                width: "8%"
-            }}>{(index + 1).toString().padStart(2, '0')}</Text>
-            {item.artwork ? (
-                <Image source={{uri: item.artwork}} style={styles.artwork} />
-            ) : (
-                <View style={[styles.artwork, styles.placeholderArtwork]}>
-                    <MaterialIcons name="music-note" size={40} color={colors.text} />
-                </View>
-            )}
-            <SongItem song={item} />
-            <Pressable 
-                onPress={() => addSongToQueue(item)}
-                style={({pressed}) => ({opacity: pressed ? 0.5 : 1})}
-            >
-                <MaterialIcons 
-                    name="queue-music" 
-                    color={colors.primary} 
-                    size={25} 
-                    style={{marginRight: 10}}
-                />
-            </Pressable>
-        </View>
+    const renderItem = useCallback(({item, index}: { item: Song, index: number }) => (
+        <SongItem song={item} index={formatIndex(index)}/>
     ), [colors, fonts, addSongToQueue]);
 
     const keyExtractor = useCallback((item: Song) => item.id ?? '', []);
@@ -71,7 +45,7 @@ const SongsList = memo(({songs, loading}: { songs: Song[], loading: boolean }) =
     ), [colors, fonts]);
 
     if (loading) {
-        return <LoadingView color={colors.primary} />;
+        return <LoadingView color={colors.primary}/>;
     }
 
     return (
@@ -118,16 +92,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: 8,
-    },
-    artwork: {
-        width: 50,
-        height: 50,
-        borderRadius: 4,
-        marginRight: 10,
-    },
-    placeholderArtwork: {
-        backgroundColor: 'rgba(0,0,0,0.05)',
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 });
