@@ -8,7 +8,8 @@ export const styles = StyleSheet.create({
   songItem: {
     padding: 15,
     flexDirection: 'row',
-    gap: 20,
+    gap: 10,
+    width: '100%',
   },
   songArtist: {
     fontSize: 14,
