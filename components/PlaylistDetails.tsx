@@ -14,15 +14,13 @@ interface Props {
 
 const PlaylistDetails = memo(({ playlist, visible, onClose }: Props) => {
     const { colors } = useTheme();
-    const { playSong } = useAudioStore();
+    const { playSong, addSongToQueue } = useAudioStore();
 
     const handlePlayPlaylist = () => {
         if (playlist?.songs.length) {
             playSong(playlist.songs[0]);
             // Ajouter les autres chansons à la queue
-            playlist.songs.slice(1).forEach(song => {
-                useAudioStore.getState().addSongToQueue(song);
-            });
+            addSongToQueue(playlist.songs.slice(1));
         }
     };
 

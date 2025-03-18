@@ -39,6 +39,16 @@ export const mapTrackToSong = (track: Track): Song => {
     }
 }
 
+export const mapSongToTrack = (song: Song): Track => {
+    return {
+        url: song.uri,
+        artist: song.artist,
+        duration: song.duration,
+        title: song.title,
+        artwork: song.artwork,
+    };
+}
+
 const formatDuration = (seconds: number | undefined): string => {
     if (seconds === undefined) {
         return "";

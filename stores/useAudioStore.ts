@@ -1,4 +1,4 @@
-import {Song} from "@/types/song";
+import {mapSongToTrack, Song} from "@/types/song";
 import {create} from "zustand";
 import TrackPlayer from "react-native-track-player";
 
@@ -7,7 +7,7 @@ interface AudioContextType {
     songsQueue: Song[];
     isPlaying: boolean;
     playSong: (song: Song) => void;
-    addSongToQueue: (song: Song) => Promise<void>;
+    addSongToQueue: (songs: Song[]) => Promise<void>;
     togglePlayPause: () => Promise<void>;
     setCurrentSong: (song: Song) => void;
     seekTo: (value: number) => Promise<void>;
@@ -46,29 +46,20 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
             });
         }
     },
-    addSongToQueue: async (song: Song) => {
-        const trackData = {
-            url: song.uri,
-            artist: song.artist,
-            duration: song.duration,
-            title: song.title,
-            artwork: song.artwork,
-        };
+    addSongToQueue: async (songs: Song[]) => {
+        const trackData = songs.map(mapSongToTrack);
 
         try {
-            await TrackPlayer.add([trackData]);
+            await TrackPlayer.add(trackData);
             setState((state) => ({
-                songsQueue: [...state.songsQueue, song]
+                songsQueue: [...state.songsQueue, ...songs]
             }));
 
             if (!getState().currentSong) {
-                getState().playSong(song);
+                getState().playSong(songs[0]);
             }
         } catch (error) {
             console.error("Erreur lors de l'ajout à la file d'attente:", error);
-            setState((state) => ({
-                songsQueue: state.songsQueue.filter(s => s.uri !== song.uri)
-            }));
         }
     },
     togglePlayPause: async () => {
