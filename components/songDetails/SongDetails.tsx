@@ -13,6 +13,7 @@ export function SongDetails({song}: { song: Song }) {
             <SongDetailsHeader/>
             <View style={localStyles.songMetadata}>
                 <SongArtwork
+                    key={song.id}
                     uri={song.artwork ?? unknownTrackImageUri}
                     style={{
                         height: '30%',

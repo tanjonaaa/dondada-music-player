@@ -11,11 +11,15 @@ interface SongArtworkProps {
 const SongArtwork: React.FC<SongArtworkProps> = ({ uri, style }) => {
     const [source, setSource] = useState<string>(uri);
 
+    React.useEffect(() => {
+        setSource(uri);
+    }, [uri]);
+
     return (
         <Image
             source={{ uri: source }}
             style={[defaultStyles.artwork, style]}
-            key={uri}
+            contentFit="cover"
             onError={() => setSource(unknownTrackImageUri)}
         />
     );
