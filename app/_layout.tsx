@@ -11,7 +11,7 @@ import {StatusBar} from "expo-status-bar";
 
 SplashScreen.preventAutoHideAsync();
 
-TrackPlayer.registerPlaybackService(() => playbackService);
+let isServiceRegistered = false;
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
@@ -25,6 +25,12 @@ export default function RootLayout() {
     })
 
     useLogTrackPlayerState()
+
+    if(!isServiceRegistered){
+            TrackPlayer.registerPlaybackService(() => playbackService);
+            isServiceRegistered = true;
+        
+    }
 
     return (
         <ThemeProvider value={colorScheme === 'dark' ? darkTheme : lightTheme}>

@@ -102,6 +102,7 @@ const styles = StyleSheet.create({
     },
     list: {
         flex: 1,
+        marginBottom: 60,
     },
     emptyContainer: {
         flex: 1,
