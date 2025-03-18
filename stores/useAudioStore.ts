@@ -47,20 +47,26 @@ const useAudioStore = create<AudioContextType>((setState, getState) => ({
         }
     },
     addSongToQueue: async (songs: Song[]) => {
-        const messages = songs.map(song => {
-            let message = "Déjà présent dans la file";
-            if (!isPresentInQueue(getState().songsQueue, song.id)) {
-                TrackPlayer.add(mapSongToTrack(song)).then(() => {
-                    setState((state) => ({
-                        songsQueue: [...state.songsQueue, song]
-                    }));
-                })
-                message = "Ajouté à la file";
-            }
-            return message;
-        })
+        const newSongs: Song[] = [];
+        const messages: string[] = [];
 
-        if (!getState().currentSong) {
+        for (const song of songs) {
+            if (!isPresentInQueue(getState().songsQueue, song.id)) {
+                await TrackPlayer.add(mapSongToTrack(song));
+                newSongs.push(song);
+                messages.push("Ajouté à la file");
+            } else {
+                messages.push("Déjà présent dans la file");
+            }
+        }
+
+        if (newSongs.length > 0) {
+            setState((state) => ({
+                songsQueue: [...state.songsQueue, ...newSongs]
+            }));
+        }
+
+        if (!getState().currentSong && songs.length > 0) {
             getState().playSong(songs[0]);
         }
 
