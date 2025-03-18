@@ -10,6 +10,7 @@ import SongArtwork from "@/components/SongArtwork";
 
 const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: boolean }) => {
     const [tooltipVisible, setTooltipVisible] = useState(false);
+    const [tooltipMessage, setTooltipMessage] = useState<string>();
     const {colors, fonts} = useTheme();
     const {addSongToQueue} = useAudioStore();
     const colorScheme = useColorScheme();
@@ -18,7 +19,8 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
     const handleAddToQueue = useCallback(async () => {
         try {
             await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            await addSongToQueue([song]);
+            const message = await addSongToQueue([song]);
+            setTooltipMessage(message[0]);
             setTooltipVisible(true);
             setTimeout(() => setTooltipVisible(false), 1000);
         } catch (error) {
@@ -66,7 +68,7 @@ const SongMetadataComponent = memo(({song, isLoading}: { song: Song, isLoading: 
                 {tooltipVisible && (
                     <View style={[localStyles.tooltip, {backgroundColor: tooltipBgColor}]}>
                         <Text style={{color: colors.text, fontFamily: fonts.regular.fontFamily}}>
-                            Ajouté à la file
+                            {tooltipMessage}
                         </Text>
                     </View>
                 )}
